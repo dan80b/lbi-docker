@@ -1,0 +1,59 @@
+version: '3'
+services:
+  registry:
+    image: lbi-registry
+    container_name: registry
+    expose:
+      - "8761"
+  auth:
+      image: lbi-auth
+      container_name: auth
+      ports:
+        - 9191:9191
+      restart: on-failure
+      depends_on:
+        - registry
+      environment:
+        - JAVA_OPTS=
+          -DEUREKA_SERVER=http://registry:8761/eureka
+  user:
+    image: lbi-user
+    container_name: user
+    expose:
+      - "8763"
+    restart: on-failure
+    depends_on:
+      - registry
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://registry:8761/eureka
+  insurance:
+    image: lbi-insurance
+    container_name: insurance
+    expose:
+      - "8764"
+    restart: on-failure
+    depends_on:
+      - registry
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://registry:8761/eureka
+  gateway:
+    image: lbi-gateway
+    container_name: gateway
+    ports:
+      - 127.0.0.1:8080:8760
+    restart: on-failure
+    depends_on:
+      - registry
+      - auth
+      - user
+      - insurance
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://registry:8761/eureka
+  shop:
+    image: lbi-shop
+    container_name: shop
+    ports:
+      - 4200:80
