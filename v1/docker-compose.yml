@@ -1,0 +1,22 @@
+version: '3'
+services:
+  service:
+    image: dbejinariu/lbi-service
+    container_name: service
+    ports:
+    - 8080:8080
+    networks:
+    - frontback
+  shop:
+    image: dbejinariu/lbi-shop
+    container_name: shop
+    ports:
+    - 80:80
+    depends_on:
+    - service
+    networks:
+    - frontback
+
+networks:
+  frontback:
+    driver: bridge
